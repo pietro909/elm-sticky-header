@@ -37,6 +37,33 @@ init =
     ( initialModel, Cmd.none )
 
 
+onGrow : Model -> Move -> Maybe (Scroll.Update a b)
+onGrow model =
+    Scroll.onCrossDown 200 (\m -> (m, Cmd.none))
+
+onShrink : Model -> Move -> Maybe (Scroll.Update a b)
+onShrink model =
+    Scroll.onCrossUp 200 (\m -> (m, Cmd.none))
+
+-- let
+--                 style = 
+--                     Animation.queue
+--                         [ Animation.toWith
+--                             (Animation.easing 
+--                                 { duration = 2*second
+--                                 , ease = (\x -> x^2)
+--                                 }
+--                             ) 
+--                             [ Animation.height (px 200) ]
+--                         ]
+--                     <|
+--                         Animation.style
+--                             [ Animation.height (px 90) ]
+--                 newModel = { model | style = style }
+--             in
+--                 (newModel, Cmd.none)
+
+
 update action model =
     case action of
         Animate animMsg ->
@@ -57,14 +84,7 @@ update action model =
                 (previous, current) = Debug.log "move" move
                 newModel = { model | nextGoal = current } 
             in
-                (newModel, Cmd.none)
-                -- Scroll.handle
-                --     [ update Grow
-                --         |> Scroll.onCrossDown 400
-                --     , update Shrink
-                --         |> Scroll.onCrossUp 400
-                --     ]
-                --     move newModel
+                Scroll.handle [ onGrow model, onShrink model ] move newModel
 
 
 view : Model -> Html.Html a
