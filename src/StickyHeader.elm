@@ -4,7 +4,7 @@ import Scroll exposing (Move)
 import Html exposing (div, header, text, h1)
 import Html.Attributes exposing (style)
 import Animation exposing (px)
-import Time exposing (second)
+import Time exposing (millisecond)
 
 import Ports exposing (..)
 
@@ -38,12 +38,12 @@ init =
 
 easing =
     Animation.easing
-        { duration = 0.5*second
+        { duration = 250 * millisecond
         , ease = (\x -> x^2)
         }
 
 animateScroll : Model -> (Model, Cmd a)
-animateScroll model = -- (model, Cmd.none)
+animateScroll model =
     let
         start = Debug.log "start" model.current 
         end = Debug.log "end" model.nextGoal 
@@ -54,14 +54,11 @@ animateScroll model = -- (model, Cmd.none)
     in
         (newModel, Cmd.none)
 
--- onGrow : Model -> Move -> Maybe (Scroll.Update a b)
 onGrow model =
     Scroll.onUp animateScroll
 
--- onShrink : Model -> Move -> Maybe (Scroll.Update a b)
 onShrink model =
     Scroll.onDown animateScroll
--- (\m -> (m, Cmd.none))
 
 
 update : Action -> Model -> (Model, Cmd a)
@@ -90,13 +87,11 @@ update action model =
 view : Model -> Html.Html a
 view model =
     let
-      styles = Animation.render model.style ++ [ style [("position", "absolute")]] 
+      styles = Animation.render model.style 
     in
       div []
-        [ header
-          styles 
-          [ h1 [] [ text "Header" ] ]
-        , div [ style [("height", "10000px")] ] [] 
+        [ header styles [ h1 [] [ text "Header" ] ]
+        , div [] [] 
         ]
 
 
