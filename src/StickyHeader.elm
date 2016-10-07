@@ -1,35 +1,38 @@
+module StickyHeader exposing (..)
+
 import Html
-import Html.App as App
-import Scroll exposing (Move)
 import Html exposing (div, header, text, h1)
-import Html.Attributes exposing (style)
 import Animation exposing (px)
+import Animation
+import Scroll exposing (Move)
 import Time exposing (millisecond)
 
 import Ports exposing (..)
 
-main =
-    App.program
-        { init = init
-        , subscriptions = subscriptions
-        , update = update
-        , view = view
-        }
+type alias HeaderComponent =
+    { title : String
+    , link : Maybe String
+    }
 
 type alias Model =
     { style : Animation.State
     , current : Float
     , nextGoal : Float
+    , brand : Maybe HeaderComponent
+    , links : List HeaderComponent
     }
 
-initialModel =
+initialModel : Maybe HeaderComponent -> List HeaderComponent -> Model
+initialModel brand links =
     { style = Animation.style [ Animation.top (px 0) ]
     , current = 0.0
     , nextGoal = 0.0
+    , brand = brand
+    , links = links
     }
 
 
-type Action
+type Msg
     = Header Move
     | Animate Animation.Msg 
 
@@ -45,8 +48,8 @@ easing =
 animateScroll : Model -> (Model, Cmd a)
 animateScroll model =
     let
-        start = Debug.log "start" model.current 
-        end = Debug.log "end" model.nextGoal 
+        start = model.current 
+        end = model.nextGoal
         style = 
             Animation.queue [ Animation.toWith easing [ Animation.top (px end ) ] ]
                 <| Animation.style [ Animation.top (px start) ]
@@ -61,19 +64,16 @@ onShrink model =
     Scroll.onDown animateScroll
 
 
-update : Action -> Model -> (Model, Cmd a)
+update : Msg -> Model -> (Model, Cmd a)
 update action model =
     case action of
         Animate animMsg ->
             let
                 newModel = 
-                    -- if model.current == model.nextGoal then
-                    --     model
-                    -- else
-                        { model
-                            | style = Animation.update animMsg model.style --( Debug.log "animate" model.style )
-                            , current = model.nextGoal 
-                        }
+                    { model
+                    | style = Animation.update animMsg model.style
+                    , current = model.nextGoal 
+                    }
             in
                 (newModel, Cmd.none)
         Header move ->
@@ -87,21 +87,12 @@ update action model =
 view : Model -> Html.Html a
 view model =
     let
-      styles = Animation.render model.style 
+        styles = Animation.render model.style 
     in
-      div []
-        [ header styles [ h1 [] [ text "Header" ] ]
-        , div [] [] 
-        ]
+        header styles [ h1 [] [ text "Header" ] ]
 
-
-{-- SUBSCRIPTIONS
- -  need to collect all the inbound ports in one subscription flow
---}
-subscriptions : Model -> Sub Action
+subscriptions : Model -> List (Sub Msg)
 subscriptions model =
-    Sub.batch
-        [ scroll Header
-        , Animation.subscription Animate [ model.style ]
-        ]
-
+    [ scroll Header
+    , Animation.subscription Animate [ model.style ]
+    ]
