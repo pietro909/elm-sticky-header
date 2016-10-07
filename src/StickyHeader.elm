@@ -36,45 +36,45 @@ type Action
 init =
     ( initialModel, Cmd.none )
 
+easing =
+    Animation.easing
+        { duration = 0.5*second
+        , ease = (\x -> x^2)
+        }
 
-onGrow : Model -> Move -> Maybe (Scroll.Update a b)
+animateScroll : Model -> (Model, Cmd a)
+animateScroll model = -- (model, Cmd.none)
+    let
+        start = Debug.log "start" model.current 
+        end = Debug.log "end" model.nextGoal 
+        style = 
+            Animation.queue [ Animation.toWith easing [ Animation.top (px end ) ] ]
+                <| Animation.style [ Animation.top (px start) ]
+        newModel = { model | style = style }
+    in
+        (newModel, Cmd.none)
+
+-- onGrow : Model -> Move -> Maybe (Scroll.Update a b)
 onGrow model =
-    Scroll.onCrossDown 200 (\m -> (m, Cmd.none))
+    Scroll.onUp animateScroll
 
-onShrink : Model -> Move -> Maybe (Scroll.Update a b)
+-- onShrink : Model -> Move -> Maybe (Scroll.Update a b)
 onShrink model =
-    Scroll.onCrossUp 200 (\m -> (m, Cmd.none))
-
--- let
---                 style = 
---                     Animation.queue
---                         [ Animation.toWith
---                             (Animation.easing 
---                                 { duration = 2*second
---                                 , ease = (\x -> x^2)
---                                 }
---                             ) 
---                             [ Animation.height (px 200) ]
---                         ]
---                     <|
---                         Animation.style
---                             [ Animation.height (px 90) ]
---                 newModel = { model | style = style }
---             in
---                 (newModel, Cmd.none)
+    Scroll.onDown animateScroll
+-- (\m -> (m, Cmd.none))
 
 
+update : Action -> Model -> (Model, Cmd a)
 update action model =
     case action of
         Animate animMsg ->
             let
                 newModel = 
-                    if model.current == model.nextGoal then
-                        model
-                    else
-                        -- animate!
+                    -- if model.current == model.nextGoal then
+                    --     model
+                    -- else
                         { model
-                            | style = Animation.update animMsg ( Debug.log "animate" model.style )
+                            | style = Animation.update animMsg model.style --( Debug.log "animate" model.style )
                             , current = model.nextGoal 
                         }
             in
@@ -90,7 +90,7 @@ update action model =
 view : Model -> Html.Html a
 view model =
     let
-      styles = Animation.render model.style ++ [ style [("position", "fixed")]] 
+      styles = Animation.render model.style ++ [ style [("position", "absolute")]] 
     in
       div []
         [ header
