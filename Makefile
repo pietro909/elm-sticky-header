@@ -1,2 +1,2 @@
 elm:
-	elm make ./example/Main.elm --output=elm.js
+	elm make ./example/Main.elm --output=public/elm.js
