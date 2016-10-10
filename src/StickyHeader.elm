@@ -51,6 +51,8 @@ type alias Model =
     , nextGoal : Float
     , brand : Maybe HeaderComponent
     , links : List HeaderComponent
+    , speedUp : Int
+    , speedDown : Int
     }
 
 {-| Helper function to initialize the header's model. It accepts an optional brand and a list of links.
@@ -69,6 +71,8 @@ initialModel brand links =
     , nextGoal = 0.0
     , brand = brand
     , links = links
+    , speedUp = 50
+    , speedDown = 500
     }
 
 {-| The messages being used for scroll events and header's movement. Are to be put in union with your message type.
@@ -86,9 +90,9 @@ type Msg
 init =
     ( initialModel, Cmd.none )
 
-easing =
+easing speed =
     Animation.easing
-        { duration = 250 * millisecond
+        { duration = toFloat(speed) * millisecond
         , ease = (\x -> x^2)
         }
 
@@ -98,18 +102,35 @@ animateScroll model =
     let
         start = model.current
         end = model.nextGoal
+        speed =
+            if (start > end) then model.speedUp
+            else model.speedDown
         style = 
-            Animation.queue [ Animation.toWith easing [ Animation.top (px end ) ] ]
+            Animation.queue [ Animation.toWith (easing speed) [ Animation.top (px end ) ] ]
                 <| Animation.style [ Animation.top (px start) ]
         newModel = { model | style = style }
     in
         (newModel, Cmd.none)
 
+
+hideHeader : Model -> (Model, Cmd a)
+hideHeader model = (model, Cmd.none)
+    -- let
+    --     start = model.current
+    --     end = 0.0
+    --     style = 
+    --         Animation.queue [ Animation.toWith easing [ Animation.top (px end ) ] ]
+    --             <| Animation.style [ Animation.top (px start) ]
+    --     newModel = { model | style = style }
+    -- in
+    --     (newModel, Cmd.none)
+
+
 onGrow model =
     Scroll.onUp animateScroll
 
 onShrink model =
-    Scroll.onDown animateScroll
+    Scroll.onDown hideHeader
 
 
 {-| Update function to handle the header's messages. It needs to be placed inside your application's update function.
@@ -175,8 +196,8 @@ view model =
 
     -- insert the subscription in you subscription loop
     subscriptions model =
-    List.map (Platform.Sub.map StickyHeaderMsg) (StickyHeader.subscriptions model.headerModel)
-    |> Sub.batch
+        List.map (Platform.Sub.map StickyHeaderMsg) (StickyHeader.subscriptions model.headerModel)
+        |> Sub.batch
 
 -}
 subscriptions : Model -> List (Sub Msg)

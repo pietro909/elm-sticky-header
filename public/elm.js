@@ -14766,23 +14766,32 @@ var _pietro909$elm_sticky_header$StickyHeader$view = function (model) {
 				navs)
 			]));
 };
-var _pietro909$elm_sticky_header$StickyHeader$easing = _mdgriffith$elm_style_animation$Animation$easing(
-	{
-		duration: 250 * _elm_lang$core$Time$millisecond,
-		ease: function (x) {
-			return Math.pow(x, 2);
-		}
-	});
+var _pietro909$elm_sticky_header$StickyHeader$hideHeader = function (model) {
+	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+};
+var _pietro909$elm_sticky_header$StickyHeader$onShrink = function (model) {
+	return _abrykajlo$elm_scroll$Scroll$onDown(_pietro909$elm_sticky_header$StickyHeader$hideHeader);
+};
+var _pietro909$elm_sticky_header$StickyHeader$easing = function (speed) {
+	return _mdgriffith$elm_style_animation$Animation$easing(
+		{
+			duration: _elm_lang$core$Basics$toFloat(speed) * _elm_lang$core$Time$millisecond,
+			ease: function (x) {
+				return Math.pow(x, 2);
+			}
+		});
+};
 var _pietro909$elm_sticky_header$StickyHeader$animateScroll = function (model) {
 	var end = model.nextGoal;
 	var start = model.current;
+	var speed = (_elm_lang$core$Native_Utils.cmp(start, end) > 0) ? model.speedUp : model.speedDown;
 	var style = A2(
 		_mdgriffith$elm_style_animation$Animation$queue,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
 				_mdgriffith$elm_style_animation$Animation$toWith,
-				_pietro909$elm_sticky_header$StickyHeader$easing,
+				_pietro909$elm_sticky_header$StickyHeader$easing(speed),
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_mdgriffith$elm_style_animation$Animation$top(
@@ -14802,9 +14811,6 @@ var _pietro909$elm_sticky_header$StickyHeader$animateScroll = function (model) {
 };
 var _pietro909$elm_sticky_header$StickyHeader$onGrow = function (model) {
 	return _abrykajlo$elm_scroll$Scroll$onUp(_pietro909$elm_sticky_header$StickyHeader$animateScroll);
-};
-var _pietro909$elm_sticky_header$StickyHeader$onShrink = function (model) {
-	return _abrykajlo$elm_scroll$Scroll$onDown(_pietro909$elm_sticky_header$StickyHeader$animateScroll);
 };
 var _pietro909$elm_sticky_header$StickyHeader$update = F2(
 	function (action, model) {
@@ -14848,7 +14854,9 @@ var _pietro909$elm_sticky_header$StickyHeader$initialModel = F2(
 			current: 0.0,
 			nextGoal: 0.0,
 			brand: brand,
-			links: links
+			links: links,
+			speedUp: 50,
+			speedDown: 500
 		};
 	});
 var _pietro909$elm_sticky_header$StickyHeader$init = {ctor: '_Tuple2', _0: _pietro909$elm_sticky_header$StickyHeader$initialModel, _1: _elm_lang$core$Platform_Cmd$none};
@@ -14856,9 +14864,9 @@ var _pietro909$elm_sticky_header$StickyHeader$HeaderComponent = F3(
 	function (a, b, c) {
 		return {title: a, link: b, cssClasses: c};
 	});
-var _pietro909$elm_sticky_header$StickyHeader$Model = F5(
-	function (a, b, c, d, e) {
-		return {style: a, current: b, nextGoal: c, brand: d, links: e};
+var _pietro909$elm_sticky_header$StickyHeader$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {style: a, current: b, nextGoal: c, brand: d, links: e, speedUp: f, speedDown: g};
 	});
 var _pietro909$elm_sticky_header$StickyHeader$Animate = function (a) {
 	return {ctor: 'Animate', _0: a};
