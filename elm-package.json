@@ -6,13 +6,15 @@
     "source-directories": [
         "./src"
     ],
-    "exposed-modules": [],
+    "exposed-modules": [
+        "StickyHeader"
+    ],
     "native-modules": true,
     "dependencies": {
-        "abrykajlo/elm-scroll": "2.0.0 <= v < 3.0.0",
         "elm-lang/core": "4.0.0 <= v < 5.0.0",
         "elm-lang/html": "1.0.0 <= v < 2.0.0",
-        "mdgriffith/elm-style-animation": "3.1.0 <= v < 4.0.0"
+        "mdgriffith/elm-style-animation": "3.1.0 <= v < 4.0.0",
+        "abrykajlo/elm-scroll": "2.0.0 <= v < 3.0.0"
     },
     "elm-version": "0.17.0 <= v < 0.18.0"
 }

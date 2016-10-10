@@ -1,7 +1,8 @@
 module StickyHeader exposing (..)
 
 import Html
-import Html exposing (div, header, text, h1)
+import Html exposing (div, header, text, h1, nav, a)
+import Html.Attributes exposing (href)
 import Animation exposing (px)
 import Animation
 import Scroll exposing (Move)
@@ -12,6 +13,7 @@ import Ports exposing (..)
 type alias HeaderComponent =
     { title : String
     , link : Maybe String
+    , cssClasses : List String
     }
 
 type alias Model =
@@ -83,13 +85,28 @@ update action model =
             in
                 Scroll.handle [ onGrow model, onShrink model ] move newModel
 
+makeLink : HeaderComponent -> Html.Html a
+makeLink { link, title } =
+    Maybe.map
+        (\url -> a [ href url ] [ text title ])
+        link
+    |> Maybe.withDefault (a [] [ text title ])
+
 
 view : Model -> Html.Html a
 view model =
     let
-        styles = Animation.render model.style 
+        styles = Animation.render model.style
+        brand = 
+            Maybe.map (\b -> h1 [] [ (makeLink b) ]) model.brand
+            |> Maybe.withDefault (Html.text "")
+        navs = 
+            List.map makeLink model.links
     in
-        header styles [ h1 [] [ text "Header" ] ]
+        header styles 
+            [ brand
+            , nav [] navs
+            ]
 
 subscriptions : Model -> List (Sub Msg)
 subscriptions model =
