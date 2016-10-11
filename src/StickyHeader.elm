@@ -121,7 +121,6 @@ easing speed =
         , ease = (\x -> x^2)
         }
 
--- todo: on grow, should disappear
 animateScroll : Model -> (Model, Cmd a)
 animateScroll model =
     let
@@ -137,25 +136,11 @@ animateScroll model =
     in
         (newModel, Cmd.none)
 
-
-hideHeader : Model -> (Model, Cmd a)
-hideHeader model = (model, Cmd.none)
-    -- let
-    --     start = model.current
-    --     end = 0.0
-    --     style = 
-    --         Animation.queue [ Animation.toWith easing [ Animation.top (px end ) ] ]
-    --             <| Animation.style [ Animation.top (px start) ]
-    --     newModel = { model | style = style }
-    -- in
-    --     (newModel, Cmd.none)
-
-
 onGrow model =
     Scroll.onUp animateScroll
 
 onShrink model =
-    Scroll.onDown hideHeader
+    Scroll.onDown (\m -> (m, Cmd.none))
 
 
 {-| Update function to handle the header's messages. It needs to be placed inside your application's update function.

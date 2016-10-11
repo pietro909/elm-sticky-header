@@ -14772,11 +14772,11 @@ var _pietro909$elm_sticky_header$StickyHeader$view = function (model) {
 				navs)
 			]));
 };
-var _pietro909$elm_sticky_header$StickyHeader$hideHeader = function (model) {
-	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-};
 var _pietro909$elm_sticky_header$StickyHeader$onShrink = function (model) {
-	return _abrykajlo$elm_scroll$Scroll$onDown(_pietro909$elm_sticky_header$StickyHeader$hideHeader);
+	return _abrykajlo$elm_scroll$Scroll$onDown(
+		function (m) {
+			return {ctor: '_Tuple2', _0: m, _1: _elm_lang$core$Platform_Cmd$none};
+		});
 };
 var _pietro909$elm_sticky_header$StickyHeader$easing = function (speed) {
 	return _mdgriffith$elm_style_animation$Animation$easing(
