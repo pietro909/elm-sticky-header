@@ -7,8 +7,7 @@
         "./src"
     ],
     "exposed-modules": [
-        "StickyHeader",
-        "Ports"
+        "StickyHeader"
     ],
     "native-modules": true,
     "dependencies": {

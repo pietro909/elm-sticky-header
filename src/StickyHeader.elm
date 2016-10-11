@@ -1,43 +1,59 @@
 module StickyHeader exposing
-    ( HeaderComponent
-    , Model
+    ( Model
     , initialModel
     , Msg
     , view
     , update
     , subscriptions
+    , buildHeaderComponent
+    , buildActiveHeaderComponent
     )
 
 {-| This module provides a header components which accepts a brand and a list of links. It will react to window's scroll.
 
 # Definition
-@docs HeaderComponent, Model
+@docs Model
 
 # Helpers
-@docs initialModel, Msg, view, update, subscriptions
+@docs initialModel, Msg, view, update, subscriptions, buildHeaderComponent, buildActiveHeaderComponent
 
 -}
 
 import Html
 import Html exposing (div, header, text, h1, nav, a)
-import Html.Attributes exposing (href)
+import Html.Attributes exposing (href, class)
 import Animation exposing (px)
 import Animation
 import Scroll exposing (Move)
 import Time exposing (millisecond)
+import String
+
 import Ports exposing (..)
 
-{-| Represent a single header's component: must have a title, which is shown on the UI, an optional link,
-    and a list of css classes to be applied on it.
 
-    -- A person, but maybe we do not know their age.
-    link = StickyHeader.HeaderComponent "Home" (Just "/") [ "home-selector" ]
--}
 type alias HeaderComponent =
     { title : String
     , link : Maybe String
     , cssClasses : List String
     }
+
+{-| Build a HeaderComponent with a title and a list of css classes to be applied
+
+    -- a header's item just showing the title
+    headerBrand = StickyHeader.buildHeaderComponent "Header" []
+-}
+buildHeaderComponent : String -> List String -> HeaderComponent
+buildHeaderComponent title cssClasses =
+    HeaderComponent title Nothing cssClasses
+
+{-| Build a HeaderComponent with a title and a list of css classes to be applied
+
+    -- a header's item just showing the title
+    headerBrand = StickyHeader.buildActiveHeaderComponent "Header" "#home" []
+-}
+buildActiveHeaderComponent : String -> String -> List String -> HeaderComponent
+buildActiveHeaderComponent title url cssClasses =
+    HeaderComponent title (Just url) cssClasses
 
 {-| Represent the header's model: attach it to your model
 
@@ -158,17 +174,19 @@ update action model =
                 (newModel, Cmd.none)
         Header move ->
             let
-                (previous, current) = Debug.log "move" move
+                (previous, current) = move
                 newModel = { model | nextGoal = current } 
             in
                 Scroll.handle [ onGrow model, onShrink model ] move newModel
 
 makeLink : HeaderComponent -> Html.Html a
-makeLink { link, title } =
-    Maybe.map
-        (\url -> a [ href url ] [ text title ])
-        link
-    |> Maybe.withDefault (a [] [ text title ])
+makeLink { link, title, cssClasses } =
+    let
+        classesAsString = String.join " " cssClasses
+        linkBuilder = \url -> a [ href url, class classesAsString ] [ text title ] 
+    in
+        Maybe.map linkBuilder link
+        |> Maybe.withDefault (a [ class classesAsString ] [ text title ])
 
 {-| Provides the Html, given an updated model.
     

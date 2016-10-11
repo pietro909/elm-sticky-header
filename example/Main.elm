@@ -18,15 +18,17 @@ type alias Model =
     { headerModel: StickyHeader.Model }
 
 headerLinks =
-    [ StickyHeader.HeaderComponent "Prelude" (Just "#prelude_to_foundation") []
-    , StickyHeader.HeaderComponent "Forward" (Just "#forward_the_foundation") []
-    , StickyHeader.HeaderComponent "Foundation" (Just "#foundation") []
-    , StickyHeader.HeaderComponent "Foundation and Empire" (Just "#foundation_and_empire") []
-    ]
+    List.map 
+        (\(title, url) -> StickyHeader.buildActiveHeaderComponent title url [])
+        [ ("Prelude", "#prelude_to_foundation") 
+        , ("Forward", "#forward_the_foundation") 
+        , ("Foundation", "#foundation")
+        , ("Foundation and Empire", "#foundation_and_empire")
+        ]
 
 initialModel =
     let
-        headerBrand = StickyHeader.HeaderComponent "Header" (Just "#home") []
+        headerBrand = StickyHeader.buildActiveHeaderComponent "Header" "#home" []
     in
         { headerModel = StickyHeader.initialModel (Just headerBrand) headerLinks }
 

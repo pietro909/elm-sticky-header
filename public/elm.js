@@ -14708,31 +14708,33 @@ var _pietro909$elm_sticky_header$Ports$scroll = _elm_lang$core$Native_Platform.i
 var _pietro909$elm_sticky_header$StickyHeader$makeLink = function (_p0) {
 	var _p1 = _p0;
 	var _p2 = _p1.title;
+	var classesAsString = A2(_elm_lang$core$String$join, ' ', _p1.cssClasses);
+	var linkBuilder = function (url) {
+		return A2(
+			_elm_lang$html$Html$a,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$href(url),
+					_elm_lang$html$Html_Attributes$class(classesAsString)
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text(_p2)
+				]));
+	};
 	return A2(
 		_elm_lang$core$Maybe$withDefault,
 		A2(
 			_elm_lang$html$Html$a,
 			_elm_lang$core$Native_List.fromArray(
-				[]),
+				[
+					_elm_lang$html$Html_Attributes$class(classesAsString)
+				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_elm_lang$html$Html$text(_p2)
 				])),
-		A2(
-			_elm_lang$core$Maybe$map,
-			function (url) {
-				return A2(
-					_elm_lang$html$Html$a,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$html$Html_Attributes$href(url)
-						]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$html$Html$text(_p2)
-						]));
-			},
-			_p1.link));
+		A2(_elm_lang$core$Maybe$map, linkBuilder, _p1.link));
 };
 var _pietro909$elm_sticky_header$StickyHeader$view = function (model) {
 	var navs = A2(_elm_lang$core$List$map, _pietro909$elm_sticky_header$StickyHeader$makeLink, model.links);
@@ -14825,7 +14827,7 @@ var _pietro909$elm_sticky_header$StickyHeader$update = F2(
 			return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
 		} else {
 			var _p5 = _p3._0;
-			var _p4 = A2(_elm_lang$core$Debug$log, 'move', _p5);
+			var _p4 = _p5;
 			var previous = _p4._0;
 			var current = _p4._1;
 			var newModel = _elm_lang$core$Native_Utils.update(
@@ -14864,6 +14866,18 @@ var _pietro909$elm_sticky_header$StickyHeader$HeaderComponent = F3(
 	function (a, b, c) {
 		return {title: a, link: b, cssClasses: c};
 	});
+var _pietro909$elm_sticky_header$StickyHeader$buildHeaderComponent = F2(
+	function (title, cssClasses) {
+		return A3(_pietro909$elm_sticky_header$StickyHeader$HeaderComponent, title, _elm_lang$core$Maybe$Nothing, cssClasses);
+	});
+var _pietro909$elm_sticky_header$StickyHeader$buildActiveHeaderComponent = F3(
+	function (title, url, cssClasses) {
+		return A3(
+			_pietro909$elm_sticky_header$StickyHeader$HeaderComponent,
+			title,
+			_elm_lang$core$Maybe$Just(url),
+			cssClasses);
+	});
 var _pietro909$elm_sticky_header$StickyHeader$Model = F7(
 	function (a, b, c, d, e, f, g) {
 		return {style: a, current: b, nextGoal: c, brand: d, links: e, speedUp: f, speedDown: g};
@@ -14886,38 +14900,29 @@ var _pietro909$elm_sticky_header$StickyHeader$subscriptions = function (model) {
 		]);
 };
 
-var _pietro909$elm_sticky_header$Main$headerLinks = _elm_lang$core$Native_List.fromArray(
-	[
-		A3(
-		_pietro909$elm_sticky_header$StickyHeader$HeaderComponent,
-		'Prelude',
-		_elm_lang$core$Maybe$Just('#prelude_to_foundation'),
-		_elm_lang$core$Native_List.fromArray(
-			[])),
-		A3(
-		_pietro909$elm_sticky_header$StickyHeader$HeaderComponent,
-		'Forward',
-		_elm_lang$core$Maybe$Just('#forward_the_foundation'),
-		_elm_lang$core$Native_List.fromArray(
-			[])),
-		A3(
-		_pietro909$elm_sticky_header$StickyHeader$HeaderComponent,
-		'Foundation',
-		_elm_lang$core$Maybe$Just('#foundation'),
-		_elm_lang$core$Native_List.fromArray(
-			[])),
-		A3(
-		_pietro909$elm_sticky_header$StickyHeader$HeaderComponent,
-		'Foundation and Empire',
-		_elm_lang$core$Maybe$Just('#foundation_and_empire'),
-		_elm_lang$core$Native_List.fromArray(
-			[]))
-	]);
+var _pietro909$elm_sticky_header$Main$headerLinks = A2(
+	_elm_lang$core$List$map,
+	function (_p0) {
+		var _p1 = _p0;
+		return A3(
+			_pietro909$elm_sticky_header$StickyHeader$buildActiveHeaderComponent,
+			_p1._0,
+			_p1._1,
+			_elm_lang$core$Native_List.fromArray(
+				[]));
+	},
+	_elm_lang$core$Native_List.fromArray(
+		[
+			{ctor: '_Tuple2', _0: 'Prelude', _1: '#prelude_to_foundation'},
+			{ctor: '_Tuple2', _0: 'Forward', _1: '#forward_the_foundation'},
+			{ctor: '_Tuple2', _0: 'Foundation', _1: '#foundation'},
+			{ctor: '_Tuple2', _0: 'Foundation and Empire', _1: '#foundation_and_empire'}
+		]));
 var _pietro909$elm_sticky_header$Main$initialModel = function () {
 	var headerBrand = A3(
-		_pietro909$elm_sticky_header$StickyHeader$HeaderComponent,
+		_pietro909$elm_sticky_header$StickyHeader$buildActiveHeaderComponent,
 		'Header',
-		_elm_lang$core$Maybe$Just('#home'),
+		'#home',
 		_elm_lang$core$Native_List.fromArray(
 			[]));
 	return {
@@ -14936,10 +14941,10 @@ var _pietro909$elm_sticky_header$Main$StickyHeaderMsg = function (a) {
 };
 var _pietro909$elm_sticky_header$Main$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		var _p1 = A2(_pietro909$elm_sticky_header$StickyHeader$update, _p0._0, model.headerModel);
-		var updatedHeaderModel = _p1._0;
-		var headerCmd = _p1._1;
+		var _p2 = msg;
+		var _p3 = A2(_pietro909$elm_sticky_header$StickyHeader$update, _p2._0, model.headerModel);
+		var updatedHeaderModel = _p3._0;
+		var headerCmd = _p3._1;
 		return {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
