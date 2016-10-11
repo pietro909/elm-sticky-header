@@ -1,0 +1,50 @@
+html, head, body {
+    margin: 0;
+    padding: 0;
+}
+header {
+    width: 100%;
+    background-color: rgb(255, 152, 0);
+    position: absolute;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 6rem;
+    overflow: hidden;
+    align-items: center;
+}
+header a {
+    text-decoration: none;
+}
+article.content {
+    padding: 1rem;
+}
+nav {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    background-color: #0d58a6;
+}
+nav a {
+    color: white;
+    margin: 0.18rem 0;
+}
+nav a:hover {
+    text-decoration: overline;
+}
+.separator {
+    display: block;
+    height: 1rem;
+}
+span#home {
+    height: 6rem;
+}
+.brand {
+    color: #0d58a6;
+    font-variant: small-caps;
+}
+@media (max-width: 700px) {
+    body {
+        font-size: 14px;
+    }
+}
