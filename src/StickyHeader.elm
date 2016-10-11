@@ -1,22 +1,22 @@
 module StickyHeader exposing
-    ( HeaderItem
+    ( Item
     , Model
     , initialModel
     , Msg
     , view
     , update
     , subscriptions
-    , buildHeaderItem
-    , buildActiveHeaderItem
+    , buildItem
+    , buildActiveItem
     )
 
 {-| This module provides a header components which accepts a brand and a list of links. It will react to window's scroll.
 
 # Definition
-@docs Model, HeaderItem
+@docs Model, Item
 
 # Helpers
-@docs initialModel, Msg, view, update, subscriptions, buildHeaderItem, buildActiveHeaderItem
+@docs initialModel, Msg, view, update, subscriptions, buildItem, buildActiveItem
 
 -}
 
@@ -33,36 +33,36 @@ import Ports exposing (..)
 
 {-| An header item has this type, and is returned by helper functions.
 -}
-type HeaderItem
-    = HeaderItem
+type Item
+    = Item
         { title : String
         , link : Maybe String
         , cssClasses : List String
         }
 
--- type alias HelperHeaderItem =
+-- type alias HelperItem =
 --         { title : String
 --         , link : Maybe String
 --         , cssClasses : List String
 --         }
 
-{-| Build a HeaderItem with a title and a list of css classes to be applied
+{-| Build a Item with a title and a list of css classes to be applied
 
     -- a header's item just showing the title
-    headerBrand = StickyHeader.buildHeaderItem "Header" []
+    headerBrand = StickyHeader.buildItem "" []
 -}
-buildHeaderItem : String -> List String -> HeaderItem
-buildHeaderItem title cssClasses =
-    HeaderItem { title = title, link = Nothing, cssClasses = cssClasses }
+buildItem : String -> List String -> Item
+buildItem title cssClasses =
+    Item { title = title, link = Nothing, cssClasses = cssClasses }
 
-{-| Build a HeaderItem with a title and a list of css classes to be applied
+{-| Build a Item with a title and a list of css classes to be applied
 
     -- a header's item just showing the title
-    headerBrand = StickyHeader.buildActiveHeaderItem "Header" "#home" []
+    headerBrand = StickyHeader.buildActiveItem "" "#home" []
 -}
-buildActiveHeaderItem : String -> String -> List String -> HeaderItem
-buildActiveHeaderItem title url cssClasses =
-    HeaderItem { title = title, link = Just url, cssClasses = cssClasses }
+buildActiveItem : String -> String -> List String -> Item
+buildActiveItem title url cssClasses =
+    Item { title = title, link = Just url, cssClasses = cssClasses }
 
 {-| Represent the header's model: attach it to your model
 
@@ -74,8 +74,8 @@ type alias Model =
     { style : Animation.State
     , current : Float
     , nextGoal : Float
-    , brand : Maybe HeaderItem
-    , links : List HeaderItem
+    , brand : Maybe Item
+    , links : List Item
     , speedUp : Int
     , speedDown : Int
     }
@@ -85,11 +85,11 @@ type alias Model =
     -- initializing your model
     initialModel =
         let
-            headerBrand = StickyHeader.HeaderItem "Header" (Just "#home") []
+            headerBrand = StickyHeader.Item "" (Just "#home") []
         in
             { headerModel = StickyHeader.initialModel (Just headerBrand) [] }
 -}
-initialModel : Maybe HeaderItem -> List HeaderItem -> Model
+initialModel : Maybe Item -> List Item -> Model
 initialModel brand links =
     { style = Animation.style [ Animation.top (px 0) ]
     , current = 0.0
@@ -150,9 +150,9 @@ onShrink model =
         case msg of
             StickyHeaderMsg subMsg->
                 let
-                    ( updatedHeaderModel, headerCmd ) = StickyHeader.update subMsg model.headerModel
+                    ( updatedModel, headerCmd ) = StickyHeader.update subMsg model.headerModel
                 in
-                    ( { model | headerModel = updatedHeaderModel }, Cmd.map StickyHeaderMsg headerCmd )
+                    ( { model | headerModel = updatedModel }, Cmd.map StickyHeaderMsg headerCmd )
 -}
 update : Msg -> Model -> (Model, Cmd a)
 update action model =
@@ -173,10 +173,10 @@ update action model =
             in
                 Scroll.handle [ onGrow model, onShrink model ] move newModel
 
-makeLink : HeaderItem -> Html.Html a
+makeLink : Item -> Html.Html a
 makeLink component =
     let
-        (HeaderItem record) = component
+        (Item record) = component
         { link, title, cssClasses } = record
         classesAsString = String.join " " cssClasses
         linkBuilder = \url -> a [ href url, class classesAsString ] [ text title ] 
