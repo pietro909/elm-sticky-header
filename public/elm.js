@@ -14705,10 +14705,14 @@ var _pietro909$elm_sticky_header$Ports$scroll = _elm_lang$core$Native_Platform.i
 		_elm_lang$core$Json_Decode$float,
 		_elm_lang$core$Json_Decode$float));
 
-var _pietro909$elm_sticky_header$StickyHeader$makeLink = function (_p0) {
-	var _p1 = _p0;
-	var _p2 = _p1.title;
-	var classesAsString = A2(_elm_lang$core$String$join, ' ', _p1.cssClasses);
+var _pietro909$elm_sticky_header$StickyHeader$makeLink = function (component) {
+	var _p0 = component;
+	var record = _p0._0;
+	var _p1 = record;
+	var link = _p1.link;
+	var title = _p1.title;
+	var cssClasses = _p1.cssClasses;
+	var classesAsString = A2(_elm_lang$core$String$join, ' ', cssClasses);
 	var linkBuilder = function (url) {
 		return A2(
 			_elm_lang$html$Html$a,
@@ -14719,7 +14723,7 @@ var _pietro909$elm_sticky_header$StickyHeader$makeLink = function (_p0) {
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
-					_elm_lang$html$Html$text(_p2)
+					_elm_lang$html$Html$text(title)
 				]));
 	};
 	return A2(
@@ -14732,9 +14736,9 @@ var _pietro909$elm_sticky_header$StickyHeader$makeLink = function (_p0) {
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
-					_elm_lang$html$Html$text(_p2)
+					_elm_lang$html$Html$text(title)
 				])),
-		A2(_elm_lang$core$Maybe$map, linkBuilder, _p1.link));
+		A2(_elm_lang$core$Maybe$map, linkBuilder, link));
 };
 var _pietro909$elm_sticky_header$StickyHeader$view = function (model) {
 	var navs = A2(_elm_lang$core$List$map, _pietro909$elm_sticky_header$StickyHeader$makeLink, model.links);
@@ -14816,20 +14820,20 @@ var _pietro909$elm_sticky_header$StickyHeader$onGrow = function (model) {
 };
 var _pietro909$elm_sticky_header$StickyHeader$update = F2(
 	function (action, model) {
-		var _p3 = action;
-		if (_p3.ctor === 'Animate') {
+		var _p2 = action;
+		if (_p2.ctor === 'Animate') {
 			var newModel = _elm_lang$core$Native_Utils.update(
 				model,
 				{
-					style: A2(_mdgriffith$elm_style_animation$Animation$update, _p3._0, model.style),
+					style: A2(_mdgriffith$elm_style_animation$Animation$update, _p2._0, model.style),
 					current: model.nextGoal
 				});
 			return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
 		} else {
-			var _p5 = _p3._0;
-			var _p4 = _p5;
-			var previous = _p4._0;
-			var current = _p4._1;
+			var _p4 = _p2._0;
+			var _p3 = _p4;
+			var previous = _p3._0;
+			var current = _p3._1;
 			var newModel = _elm_lang$core$Native_Utils.update(
 				model,
 				{nextGoal: current});
@@ -14840,7 +14844,7 @@ var _pietro909$elm_sticky_header$StickyHeader$update = F2(
 						_pietro909$elm_sticky_header$StickyHeader$onGrow(model),
 						_pietro909$elm_sticky_header$StickyHeader$onShrink(model)
 					]),
-				_p5,
+				_p4,
 				newModel);
 		}
 	});
@@ -14862,25 +14866,26 @@ var _pietro909$elm_sticky_header$StickyHeader$initialModel = F2(
 		};
 	});
 var _pietro909$elm_sticky_header$StickyHeader$init = {ctor: '_Tuple2', _0: _pietro909$elm_sticky_header$StickyHeader$initialModel, _1: _elm_lang$core$Platform_Cmd$none};
-var _pietro909$elm_sticky_header$StickyHeader$HeaderComponent = F3(
-	function (a, b, c) {
-		return {title: a, link: b, cssClasses: c};
-	});
-var _pietro909$elm_sticky_header$StickyHeader$buildHeaderComponent = F2(
-	function (title, cssClasses) {
-		return A3(_pietro909$elm_sticky_header$StickyHeader$HeaderComponent, title, _elm_lang$core$Maybe$Nothing, cssClasses);
-	});
-var _pietro909$elm_sticky_header$StickyHeader$buildActiveHeaderComponent = F3(
-	function (title, url, cssClasses) {
-		return A3(
-			_pietro909$elm_sticky_header$StickyHeader$HeaderComponent,
-			title,
-			_elm_lang$core$Maybe$Just(url),
-			cssClasses);
-	});
 var _pietro909$elm_sticky_header$StickyHeader$Model = F7(
 	function (a, b, c, d, e, f, g) {
 		return {style: a, current: b, nextGoal: c, brand: d, links: e, speedUp: f, speedDown: g};
+	});
+var _pietro909$elm_sticky_header$StickyHeader$HeaderComponent = function (a) {
+	return {ctor: 'HeaderComponent', _0: a};
+};
+var _pietro909$elm_sticky_header$StickyHeader$buildHeaderComponent = F2(
+	function (title, cssClasses) {
+		return _pietro909$elm_sticky_header$StickyHeader$HeaderComponent(
+			{title: title, link: _elm_lang$core$Maybe$Nothing, cssClasses: cssClasses});
+	});
+var _pietro909$elm_sticky_header$StickyHeader$buildActiveHeaderComponent = F3(
+	function (title, url, cssClasses) {
+		return _pietro909$elm_sticky_header$StickyHeader$HeaderComponent(
+			{
+				title: title,
+				link: _elm_lang$core$Maybe$Just(url),
+				cssClasses: cssClasses
+			});
 	});
 var _pietro909$elm_sticky_header$StickyHeader$Animate = function (a) {
 	return {ctor: 'Animate', _0: a};

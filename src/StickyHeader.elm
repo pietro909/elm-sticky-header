@@ -1,5 +1,6 @@
 module StickyHeader exposing
-    ( Model
+    ( HeaderComponent
+    , Model
     , initialModel
     , Msg
     , view
@@ -12,7 +13,7 @@ module StickyHeader exposing
 {-| This module provides a header components which accepts a brand and a list of links. It will react to window's scroll.
 
 # Definition
-@docs Model
+@docs Model, HeaderComponent
 
 # Helpers
 @docs initialModel, Msg, view, update, subscriptions, buildHeaderComponent, buildActiveHeaderComponent
@@ -30,12 +31,20 @@ import String
 
 import Ports exposing (..)
 
+{-| An header item has this type, and is returned by helper functions.
+-}
+type HeaderComponent
+    = HeaderComponent
+        { title : String
+        , link : Maybe String
+        , cssClasses : List String
+        }
 
-type alias HeaderComponent =
-    { title : String
-    , link : Maybe String
-    , cssClasses : List String
-    }
+-- type alias HelperHeaderComponent =
+--         { title : String
+--         , link : Maybe String
+--         , cssClasses : List String
+--         }
 
 {-| Build a HeaderComponent with a title and a list of css classes to be applied
 
@@ -44,7 +53,7 @@ type alias HeaderComponent =
 -}
 buildHeaderComponent : String -> List String -> HeaderComponent
 buildHeaderComponent title cssClasses =
-    HeaderComponent title Nothing cssClasses
+    HeaderComponent { title = title, link = Nothing, cssClasses = cssClasses }
 
 {-| Build a HeaderComponent with a title and a list of css classes to be applied
 
@@ -53,7 +62,7 @@ buildHeaderComponent title cssClasses =
 -}
 buildActiveHeaderComponent : String -> String -> List String -> HeaderComponent
 buildActiveHeaderComponent title url cssClasses =
-    HeaderComponent title (Just url) cssClasses
+    HeaderComponent { title = title, link = Just url, cssClasses = cssClasses }
 
 {-| Represent the header's model: attach it to your model
 
@@ -180,8 +189,10 @@ update action model =
                 Scroll.handle [ onGrow model, onShrink model ] move newModel
 
 makeLink : HeaderComponent -> Html.Html a
-makeLink { link, title, cssClasses } =
+makeLink component =
     let
+        (HeaderComponent record) = component
+        { link, title, cssClasses } = record
         classesAsString = String.join " " cssClasses
         linkBuilder = \url -> a [ href url, class classesAsString ] [ text title ] 
     in
@@ -211,11 +222,29 @@ view model =
             ]
 
 {-| Provide the subscription to the JS port which brings the scroll values.
+    The port named 'scroll' needs to be fed with window's scroll event.
 
     -- insert the subscription in you subscription loop
     subscriptions model =
         List.map (Platform.Sub.map StickyHeaderMsg) (StickyHeader.subscriptions model.headerModel)
         |> Sub.batch
+
+    -- initialize port in your javascript code
+    <script>
+        // init myApp with Elm.Main
+        var mountNode = document.getElementById('main');
+        var myApp = Elm.Main.embed(mountNode);
+
+        // get the port
+        var scroll = window.pageYOffset || document.body.scrollTop;
+
+        // on window's scroll, send the current values
+        window.onscroll = function() {
+            var newScroll = window.pageYOffset || document.body.scrollTop;
+            myApp.ports.scroll.send([scroll, newScroll]);
+            scroll = newScroll;
+        };
+    </script>
 
 -}
 subscriptions : Model -> List (Sub Msg)
