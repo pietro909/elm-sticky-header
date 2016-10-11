@@ -14772,11 +14772,11 @@ var _pietro909$elm_sticky_header$StickyHeader$view = function (model) {
 				navs)
 			]));
 };
-var _pietro909$elm_sticky_header$StickyHeader$hideHeader = function (model) {
-	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-};
 var _pietro909$elm_sticky_header$StickyHeader$onShrink = function (model) {
-	return _abrykajlo$elm_scroll$Scroll$onDown(_pietro909$elm_sticky_header$StickyHeader$hideHeader);
+	return _abrykajlo$elm_scroll$Scroll$onDown(
+		function (m) {
+			return {ctor: '_Tuple2', _0: m, _1: _elm_lang$core$Platform_Cmd$none};
+		});
 };
 var _pietro909$elm_sticky_header$StickyHeader$easing = function (speed) {
 	return _mdgriffith$elm_style_animation$Animation$easing(
@@ -14870,17 +14870,17 @@ var _pietro909$elm_sticky_header$StickyHeader$Model = F7(
 	function (a, b, c, d, e, f, g) {
 		return {style: a, current: b, nextGoal: c, brand: d, links: e, speedUp: f, speedDown: g};
 	});
-var _pietro909$elm_sticky_header$StickyHeader$HeaderComponent = function (a) {
-	return {ctor: 'HeaderComponent', _0: a};
+var _pietro909$elm_sticky_header$StickyHeader$HeaderItem = function (a) {
+	return {ctor: 'HeaderItem', _0: a};
 };
-var _pietro909$elm_sticky_header$StickyHeader$buildHeaderComponent = F2(
+var _pietro909$elm_sticky_header$StickyHeader$buildHeaderItem = F2(
 	function (title, cssClasses) {
-		return _pietro909$elm_sticky_header$StickyHeader$HeaderComponent(
+		return _pietro909$elm_sticky_header$StickyHeader$HeaderItem(
 			{title: title, link: _elm_lang$core$Maybe$Nothing, cssClasses: cssClasses});
 	});
-var _pietro909$elm_sticky_header$StickyHeader$buildActiveHeaderComponent = F3(
+var _pietro909$elm_sticky_header$StickyHeader$buildActiveHeaderItem = F3(
 	function (title, url, cssClasses) {
-		return _pietro909$elm_sticky_header$StickyHeader$HeaderComponent(
+		return _pietro909$elm_sticky_header$StickyHeader$HeaderItem(
 			{
 				title: title,
 				link: _elm_lang$core$Maybe$Just(url),
@@ -14910,7 +14910,7 @@ var _pietro909$elm_sticky_header$Main$headerLinks = A2(
 	function (_p0) {
 		var _p1 = _p0;
 		return A3(
-			_pietro909$elm_sticky_header$StickyHeader$buildActiveHeaderComponent,
+			_pietro909$elm_sticky_header$StickyHeader$buildActiveHeaderItem,
 			_p1._0,
 			_p1._1,
 			_elm_lang$core$Native_List.fromArray(
@@ -14925,11 +14925,11 @@ var _pietro909$elm_sticky_header$Main$headerLinks = A2(
 		]));
 var _pietro909$elm_sticky_header$Main$initialModel = function () {
 	var headerBrand = A3(
-		_pietro909$elm_sticky_header$StickyHeader$buildActiveHeaderComponent,
-		'Header',
-		'#home',
+		_pietro909$elm_sticky_header$StickyHeader$buildActiveHeaderItem,
+		'StickyHeader demo',
+		'https://github.com/pietro909/elm-sticky-header',
 		_elm_lang$core$Native_List.fromArray(
-			[]));
+			['brand']));
 	return {
 		headerModel: A2(
 			_pietro909$elm_sticky_header$StickyHeader$initialModel,

@@ -1,22 +1,22 @@
 module StickyHeader exposing
-    ( HeaderComponent
+    ( HeaderItem
     , Model
     , initialModel
     , Msg
     , view
     , update
     , subscriptions
-    , buildHeaderComponent
-    , buildActiveHeaderComponent
+    , buildHeaderItem
+    , buildActiveHeaderItem
     )
 
 {-| This module provides a header components which accepts a brand and a list of links. It will react to window's scroll.
 
 # Definition
-@docs Model, HeaderComponent
+@docs Model, HeaderItem
 
 # Helpers
-@docs initialModel, Msg, view, update, subscriptions, buildHeaderComponent, buildActiveHeaderComponent
+@docs initialModel, Msg, view, update, subscriptions, buildHeaderItem, buildActiveHeaderItem
 
 -}
 
@@ -33,36 +33,36 @@ import Ports exposing (..)
 
 {-| An header item has this type, and is returned by helper functions.
 -}
-type HeaderComponent
-    = HeaderComponent
+type HeaderItem
+    = HeaderItem
         { title : String
         , link : Maybe String
         , cssClasses : List String
         }
 
--- type alias HelperHeaderComponent =
+-- type alias HelperHeaderItem =
 --         { title : String
 --         , link : Maybe String
 --         , cssClasses : List String
 --         }
 
-{-| Build a HeaderComponent with a title and a list of css classes to be applied
+{-| Build a HeaderItem with a title and a list of css classes to be applied
 
     -- a header's item just showing the title
-    headerBrand = StickyHeader.buildHeaderComponent "Header" []
+    headerBrand = StickyHeader.buildHeaderItem "Header" []
 -}
-buildHeaderComponent : String -> List String -> HeaderComponent
-buildHeaderComponent title cssClasses =
-    HeaderComponent { title = title, link = Nothing, cssClasses = cssClasses }
+buildHeaderItem : String -> List String -> HeaderItem
+buildHeaderItem title cssClasses =
+    HeaderItem { title = title, link = Nothing, cssClasses = cssClasses }
 
-{-| Build a HeaderComponent with a title and a list of css classes to be applied
+{-| Build a HeaderItem with a title and a list of css classes to be applied
 
     -- a header's item just showing the title
-    headerBrand = StickyHeader.buildActiveHeaderComponent "Header" "#home" []
+    headerBrand = StickyHeader.buildActiveHeaderItem "Header" "#home" []
 -}
-buildActiveHeaderComponent : String -> String -> List String -> HeaderComponent
-buildActiveHeaderComponent title url cssClasses =
-    HeaderComponent { title = title, link = Just url, cssClasses = cssClasses }
+buildActiveHeaderItem : String -> String -> List String -> HeaderItem
+buildActiveHeaderItem title url cssClasses =
+    HeaderItem { title = title, link = Just url, cssClasses = cssClasses }
 
 {-| Represent the header's model: attach it to your model
 
@@ -74,8 +74,8 @@ type alias Model =
     { style : Animation.State
     , current : Float
     , nextGoal : Float
-    , brand : Maybe HeaderComponent
-    , links : List HeaderComponent
+    , brand : Maybe HeaderItem
+    , links : List HeaderItem
     , speedUp : Int
     , speedDown : Int
     }
@@ -85,11 +85,11 @@ type alias Model =
     -- initializing your model
     initialModel =
         let
-            headerBrand = StickyHeader.HeaderComponent "Header" (Just "#home") []
+            headerBrand = StickyHeader.HeaderItem "Header" (Just "#home") []
         in
             { headerModel = StickyHeader.initialModel (Just headerBrand) [] }
 -}
-initialModel : Maybe HeaderComponent -> List HeaderComponent -> Model
+initialModel : Maybe HeaderItem -> List HeaderItem -> Model
 initialModel brand links =
     { style = Animation.style [ Animation.top (px 0) ]
     , current = 0.0
@@ -121,7 +121,6 @@ easing speed =
         , ease = (\x -> x^2)
         }
 
--- todo: on grow, should disappear
 animateScroll : Model -> (Model, Cmd a)
 animateScroll model =
     let
@@ -137,25 +136,11 @@ animateScroll model =
     in
         (newModel, Cmd.none)
 
-
-hideHeader : Model -> (Model, Cmd a)
-hideHeader model = (model, Cmd.none)
-    -- let
-    --     start = model.current
-    --     end = 0.0
-    --     style = 
-    --         Animation.queue [ Animation.toWith easing [ Animation.top (px end ) ] ]
-    --             <| Animation.style [ Animation.top (px start) ]
-    --     newModel = { model | style = style }
-    -- in
-    --     (newModel, Cmd.none)
-
-
 onGrow model =
     Scroll.onUp animateScroll
 
 onShrink model =
-    Scroll.onDown hideHeader
+    Scroll.onDown (\m -> (m, Cmd.none))
 
 
 {-| Update function to handle the header's messages. It needs to be placed inside your application's update function.
@@ -188,10 +173,10 @@ update action model =
             in
                 Scroll.handle [ onGrow model, onShrink model ] move newModel
 
-makeLink : HeaderComponent -> Html.Html a
+makeLink : HeaderItem -> Html.Html a
 makeLink component =
     let
-        (HeaderComponent record) = component
+        (HeaderItem record) = component
         { link, title, cssClasses } = record
         classesAsString = String.join " " cssClasses
         linkBuilder = \url -> a [ href url, class classesAsString ] [ text title ] 
