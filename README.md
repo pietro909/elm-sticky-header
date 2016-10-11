@@ -65,12 +65,18 @@ model to the module's view function:
 ```
 
 Last step is to activate the port which deals with the actual window's scroll
-event. We do that inserting the port in our application's `subscriptions`
+event. Let's create it in the `Ports.elm` file:
+
+```
+port scroll : StickyHeader.Port 
+```
+
+Now import it in your `Main.elm` module and forward it to the subscriptions function:
 
 ```elm
     subscriptions : Model -> Sub Msg
     subscriptions model =
-        List.map (Platform.Sub.map StickyHeaderMsg) (StickyHeader.subscriptions model.headerModel)
+        List.map (Platform.Sub.map StickyHeaderMsg) (StickyHeader.subscriptions Ports.scroll model.headerModel)
         |> Sub.batch
 ```
 

@@ -1,6 +1,7 @@
 module StickyHeader exposing
     ( Item
     , Model
+    , Port
     , initialModel
     , Msg
     , view
@@ -13,7 +14,7 @@ module StickyHeader exposing
 {-| This module provides a header components which accepts a brand and a list of links. It will react to window's scroll.
 
 # Definition
-@docs Model, Item
+@docs Model, Item, Port
 
 # Helpers
 @docs initialModel, Msg, view, update, subscriptions, buildItem, buildActiveItem
@@ -29,7 +30,6 @@ import Scroll exposing (Move)
 import Time exposing (millisecond)
 import String
 
-import Ports exposing (..)
 
 {-| An header item has this type, and is returned by helper functions.
 -}
@@ -39,12 +39,6 @@ type Item
         , link : Maybe String
         , cssClasses : List String
         }
-
--- type alias HelperItem =
---         { title : String
---         , link : Maybe String
---         , cssClasses : List String
---         }
 
 {-| Build a Item with a title and a list of css classes to be applied
 
@@ -206,6 +200,15 @@ view model =
             , nav [] navs
             ]
 
+{-| Type of the port needed to get scroll values.
+    
+    -- declaring the port in `Ports.elm` file
+    -- need to import Scroll.Move
+
+    port scroll : (Move -> msg) -> Sub msg
+-}
+type alias Port = (Move -> Msg) -> Sub Msg
+
 {-| Provide the subscription to the JS port which brings the scroll values.
     The port named 'scroll' needs to be fed with window's scroll event.
 
@@ -232,8 +235,8 @@ view model =
     </script>
 
 -}
-subscriptions : Model -> List (Sub Msg)
-subscriptions model =
-    [ scroll Header
+subscriptions : Port -> Model -> List (Sub Msg)
+subscriptions portForScroll model =
+    [ portForScroll Header
     , Animation.subscription Animate [ model.style ]
     ]
