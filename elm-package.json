@@ -2,14 +2,13 @@
     "version": "1.0.0",
     "summary": "Sticky header to handle scroll on mobile UI",
     "repository": "https://github.com/pietro909/elm-sticky-header.git",
-    "license": "MIT",
+    "license": "BSD3",
     "source-directories": [
         "./src"
     ],
     "exposed-modules": [
         "StickyHeader"
     ],
-    "native-modules": true,
     "dependencies": {
         "abrykajlo/elm-scroll": "2.0.0 <= v < 3.0.0",
         "elm-lang/core": "4.0.0 <= v < 5.0.0",
