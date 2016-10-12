@@ -5,6 +5,7 @@ import Html exposing (div, header, text, h1, h2, article)
 import Html.Attributes exposing (style, class)
 import Platform.Sub
 import StickyHeader
+import Ports
 
 main =
     App.program
@@ -58,5 +59,5 @@ view model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    List.map (Platform.Sub.map StickyHeaderMsg) (StickyHeader.subscriptions model.headerModel)
+    List.map (Platform.Sub.map StickyHeaderMsg) (StickyHeader.subscriptions Ports.scroll model.headerModel)
     |> Sub.batch
