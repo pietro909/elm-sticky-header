@@ -24,12 +24,13 @@ module StickyHeader exposing
 import Html
 import Html exposing (div, header, text, h1, nav, a)
 import Html.Attributes exposing (href, class)
+import Html.Events exposing (onClick)
 import Animation exposing (px)
 import Animation
 import Scroll exposing (Move)
 import Time exposing (millisecond)
 import String
-
+import Random
 
 {-| An header item has this type, and is returned by helper functions.
 -}
@@ -72,6 +73,7 @@ type alias Model =
     , links : List Item
     , speedUp : Int
     , speedDown : Int
+    , active : Maybe Int
     }
 
 {-| Helper function to initialize the header's model. It accepts an optional brand and a list of links.
@@ -92,6 +94,7 @@ initialModel brand links =
     , links = links
     , speedUp = 50
     , speedDown = 500
+    , active = Nothing
     }
 
 {-| The messages being used for scroll events and header's movement. Are to be put in union with your message type.
@@ -104,7 +107,8 @@ initialModel brand links =
 -}
 type Msg
     = Header Move
-    | Animate Animation.Msg 
+    | Animate Animation.Msg
+    | Select Int
 
 init =
     ( initialModel, Cmd.none )
@@ -166,17 +170,21 @@ update action model =
                 newModel = { model | nextGoal = current } 
             in
                 Scroll.handle [ onGrow model, onShrink model ] move newModel
+        Select index ->
+            ({ model | active = Just index }, Cmd.none)
 
-makeLink : Item -> Html.Html a
-makeLink component =
+makeLink : Int -> Int -> Item -> Html.Html Msg
+makeLink activeIndex index component =
     let
         (Item record) = component
         { link, title, cssClasses } = record
-        classesAsString = String.join " " cssClasses
-        linkBuilder = \url -> a [ href url, class classesAsString ] [ text title ] 
+        classesAsString = 
+            (if index == activeIndex then "active" else "") :: cssClasses
+            |> String.join " "
+        linkBuilder = \url -> a [ href url, class classesAsString, onClick (Select index) ] [ text title ] 
     in
         Maybe.map linkBuilder link
-        |> Maybe.withDefault (a [ class classesAsString ] [ text title ])
+        |> Maybe.withDefault (a [ class classesAsString, onClick (Select index) ] [ text title ])
 
 {-| Provides the Html, given an updated model.
     
@@ -185,15 +193,16 @@ makeLink component =
         App.map StickyHeaderMsg (StickyHeader.view model.headerModel)
 
 -}
-view : Model -> Html.Html a
+view : Model -> Html.Html Msg
 view model =
     let
         styles = Animation.render model.style
+        activeIndex = Maybe.withDefault (Random.minInt) model.active
         brand = 
-            Maybe.map (\b -> h1 [] [ (makeLink b) ]) model.brand
+            Maybe.map (\b -> h1 [] [ (makeLink activeIndex -1 b) ]) model.brand
             |> Maybe.withDefault (Html.text "")
         navs = 
-            List.map makeLink model.links
+            List.indexedMap (makeLink activeIndex) model.links
     in
         header styles 
             [ brand

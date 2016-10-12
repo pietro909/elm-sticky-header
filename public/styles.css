@@ -16,6 +16,9 @@ header {
 header a {
     text-decoration: none;
 }
+header a.active {
+    text-decoration: line-through;
+}
 article.content {
     padding: 1rem;
 }
