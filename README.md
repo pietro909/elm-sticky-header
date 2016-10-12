@@ -68,7 +68,7 @@ Last step is to activate the port which deals with the actual window's scroll
 event. Let's create it in the `Ports.elm` file:
 
 ```
-port scroll : StickyHeader.Port 
+port scroll : (Scroll.Move -> msg) -> Sub msg  
 ```
 
 Now import it in your `Main.elm` module and forward it to the subscriptions function:
