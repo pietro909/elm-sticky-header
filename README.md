@@ -29,7 +29,7 @@ Then include the module in your application (in this case, `Mail.elm`):
     initialModel =
         let
             headerBrand =
-                StickyHeader.buildHeaderItem "StickyHeader demo" [ ]
+                StickyHeader.buildItem "StickyHeader demo" [ ]
         in
             { headerModel = StickyHeader.initialModel (Just headerBrand) [] }\
 
@@ -97,6 +97,24 @@ And then add the Javscript code which will feed the port with event's data:
     };
   </script>
 ```
+
+## Styling
+
+The component renders an Html structure like this one:
+
+```htm
+<header> 
+    <h1><a>Brand</a></h1>
+    <nav>
+        <a>first link</a>
+        <!-- ...links here -->
+    </nav>
+</header>
+```
+
+You can pass a list of CSS classes to be applied to the links with `StickyHeader.buildItem`. The classes will be assigned to the `<a>` element.
+
+When an link is selected, the default `active` class is applied, thus allowing you to style it properly.
 
 ## Further readings
 
