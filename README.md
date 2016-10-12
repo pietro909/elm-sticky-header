@@ -29,7 +29,7 @@ Then include the module in your application (in this case, `Mail.elm`):
     initialModel =
         let
             headerBrand =
-                StickyHeader.buildHeaderItem "StickyHeader demo" [ ]
+                StickyHeader.buildItem "StickyHeader demo" [ ]
         in
             { headerModel = StickyHeader.initialModel (Just headerBrand) [] }\
 
@@ -65,12 +65,18 @@ model to the module's view function:
 ```
 
 Last step is to activate the port which deals with the actual window's scroll
-event. We do that inserting the port in our application's `subscriptions`
+event. Let's create it in the `Ports.elm` file:
+
+```
+port scroll : (Scroll.Move -> msg) -> Sub msg  
+```
+
+Now import it in your `Main.elm` module and forward it to the subscriptions function:
 
 ```elm
     subscriptions : Model -> Sub Msg
     subscriptions model =
-        List.map (Platform.Sub.map StickyHeaderMsg) (StickyHeader.subscriptions model.headerModel)
+        List.map (Platform.Sub.map StickyHeaderMsg) (StickyHeader.subscriptions Ports.scroll model.headerModel)
         |> Sub.batch
 ```
 
@@ -91,6 +97,24 @@ And then add the Javscript code which will feed the port with event's data:
     };
   </script>
 ```
+
+## Styling
+
+The component renders an Html structure like this one:
+
+```htm
+<header> 
+    <h1><a>Brand</a></h1>
+    <nav>
+        <a>first link</a>
+        <!-- ...links here -->
+    </nav>
+</header>
+```
+
+You can pass a list of CSS classes to be applied to the links with `StickyHeader.buildItem`. The classes will be assigned to the `<a>` element.
+
+When an link is selected, the default `active` class is applied, thus allowing you to style it properly.
 
 ## Further readings
 
