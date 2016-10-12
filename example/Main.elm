@@ -19,7 +19,7 @@ type alias Model =
 
 headerLinks =
     List.map 
-        (\(title, url) -> StickyHeader.buildActiveHeaderItem title url [])
+        (\(title, url) -> StickyHeader.buildActiveItem title url [])
         [ ("Prelude", "#prelude_to_foundation") 
         , ("Forward", "#forward_the_foundation") 
         , ("Foundation", "#foundation")
@@ -28,7 +28,7 @@ headerLinks =
 
 initialModel =
     let
-        headerBrand = StickyHeader.buildActiveHeaderItem "StickyHeader demo" "https://github.com/pietro909/elm-sticky-header" [ "brand" ]
+        headerBrand = StickyHeader.buildActiveItem "StickyHeader demo" "https://github.com/pietro909/elm-sticky-header" [ "brand" ]
     in
         { headerModel = StickyHeader.initialModel (Just headerBrand) headerLinks }
 
