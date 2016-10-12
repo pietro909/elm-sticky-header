@@ -5,4 +5,4 @@ import StickyHeader
 
 -- type alias TPort = (Move -> msg) -> Sub msg
 
-port scroll : (Move -> StickyHeader.Msg) -> Sub StickyHeader.Msg -- StickyHeader.Port 
+port scroll : (Move -> msg) -> Sub msg 
