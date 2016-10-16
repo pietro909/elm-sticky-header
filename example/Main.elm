@@ -1,8 +1,8 @@
 
 import Html
 import Html.App as App
-import Html exposing (div, header, text, h1, h2, article)
-import Html.Attributes exposing (style, class)
+import Html exposing (div, header, text, h1, h2, article, img)
+import Html.Attributes exposing (style, class, src)
 import Platform.Sub
 import StickyHeader
 import Ports
@@ -30,8 +30,10 @@ headerLinks =
 initialModel =
     let
         headerBrand = StickyHeader.buildActiveItem "StickyHeader demo" "https://github.com/pietro909/elm-sticky-header" [ "brand" ]
+        logoImage = img [ src "logo-elm.png" ] []
+        headerLogo = StickyHeader.buildLogo logoImage [ "logo" ]
     in
-        { headerModel = StickyHeader.initialModel (Just headerBrand) headerLinks }
+        { headerModel = StickyHeader.initialModel (Just headerLogo) (Just headerBrand) headerLinks }
 
 
 type Msg

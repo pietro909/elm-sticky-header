@@ -9,6 +9,7 @@ module StickyHeader exposing
     , subscriptions
     , buildItem
     , buildActiveItem
+    , buildLogo
     )
 
 {-| This module provides a header components which accepts a brand and a list of links. It will react to window's scroll.
@@ -17,12 +18,12 @@ module StickyHeader exposing
 @docs Model, Item, Port
 
 # Helpers
-@docs initialModel, Msg, view, update, subscriptions, buildItem, buildActiveItem
+@docs initialModel, Msg, view, update, subscriptions, buildItem, buildActiveItem, buildLogo
 
 -}
 
 import Html
-import Html exposing (div, header, text, h1, nav, a)
+import Html exposing (div, header, text, h1, nav, a, img, span)
 import Html.Attributes exposing (href, class)
 import Html.Events exposing (onClick)
 import Animation exposing (px)
@@ -39,6 +40,15 @@ type Item
         { title : String
         , link : Maybe String
         , cssClasses : List String
+        }
+
+{-| The header's logo has this type, and it is returned by helper functions.
+-}
+type Logo
+    = Logo
+        { link : Maybe String
+        , cssClasses : List String
+        , image : Html.Html Msg
         }
 
 {-| Build a Item with a title and a list of css classes to be applied
@@ -59,6 +69,21 @@ buildActiveItem : String -> String -> List String -> Item
 buildActiveItem title url cssClasses =
     Item { title = title, link = Just url, cssClasses = cssClasses }
 
+{-| Build a Logo item, givene the inner HTML that will be wrapper in a <span> element
+    and places on the left of the title. It takes also a list of css classes to be applied.
+
+    -- a simple logo with an image and the class 'logo' applied on it
+    logoImage = 
+        headerLogo = StickyHeader.buildLogo (img [ src "logo-elm.png" ] []) [ "logo" ]
+-} 
+buildLogo : (Html.Html Msg) -> List String -> Logo
+buildLogo image cssClasses =
+    Logo
+        { link = Nothing
+        , cssClasses = cssClasses
+        , image = image
+        }
+
 {-| Represent the header's model: attach it to your model
 
     -- inserting header's model in your application model
@@ -69,6 +94,7 @@ type alias Model =
     { style : Animation.State
     , current : Float
     , nextGoal : Float
+    , logo : Maybe Logo
     , brand : Maybe Item
     , links : List Item
     , speedUp : Int
@@ -85,11 +111,12 @@ type alias Model =
         in
             { headerModel = StickyHeader.initialModel (Just headerBrand) [] }
 -}
-initialModel : Maybe Item -> List Item -> Model
-initialModel brand links =
+initialModel : Maybe Logo -> Maybe Item -> List Item -> Model
+initialModel logo brand links =
     { style = Animation.style [ Animation.top (px 0) ]
     , current = 0.0
     , nextGoal = 0.0
+    , logo = logo
     , brand = brand
     , links = links
     , speedUp = 50
@@ -186,6 +213,14 @@ makeLink activeIndex index component =
         Maybe.map linkBuilder link
         |> Maybe.withDefault (a [ class classesAsString, onClick (Select index) ] [ text title ])
 
+makeLogo : Logo -> Html.Html Msg
+makeLogo logo =
+    let
+        (Logo record) = logo
+        { link, cssClasses, image } = record
+    in
+        span [ class (String.join " " cssClasses) ] [ image ]
+
 {-| Provides the Html, given an updated model.
     
     -- insert it in your view function
@@ -198,6 +233,9 @@ view model =
     let
         styles = Animation.render model.style
         activeIndex = Maybe.withDefault (Random.minInt) model.active
+        logo =
+            Maybe.map (\l -> makeLogo l) model.logo
+            |> Maybe.withDefault (Html.text "")
         brand = 
             Maybe.map (\b -> h1 [] [ (makeLink activeIndex -1 b) ]) model.brand
             |> Maybe.withDefault (Html.text "")
@@ -205,7 +243,10 @@ view model =
             List.indexedMap (makeLink activeIndex) model.links
     in
         header styles 
-            [ brand
+            [ div []
+                [ logo
+                , brand
+                ]
             , nav [] navs
             ]
 

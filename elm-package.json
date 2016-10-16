@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "summary": "Sticky header to handle scroll on mobile UI",
     "repository": "https://github.com/pietro909/elm-sticky-header.git",
     "license": "MIT",
