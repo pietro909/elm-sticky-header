@@ -5,6 +5,13 @@ remains attached to the top when scrolling up.
 
 For a live example check [this url](https://pietro909.github.io/elm-sticky-header/public/).
 
+It allows to define:
+ * _logo_, some HTML to be places on the left of the title
+ * _brand_, the main title to be shown on the menu
+ * _links_, a list of links to be displayed on the menu
+
+It takes care of tracking the current selected link, applying the `active` class.
+
 ## Why
 Using Elm, I found a lack of UI components ready to use. Namely, I developed this
 one while working at [MaltaJS registration page](https://github.com/roedit/maltajs-elm).
